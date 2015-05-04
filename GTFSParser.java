@@ -33,7 +33,15 @@ public class GTFSParser {
 		return al;
 	}
 
-	private static ArrayList<Trajectory> parseTrips(String tripFile) {
-		
+	private static ArrayList<Trajectory> parseTrips(String filePath) {
+		ArrayList<Trajectory> trajectoryList;
+		InputStream isCal = new FileInputStream(filePath+"/calendar.txt");
+		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
+		InputStream isTimes = new FileInputStream(filePath+"/stop_times.txt");
+		InputStream isTrips = new FileInputStream(filePath+"/trips.txt");
+		ArrayList<Map<String, String>> calList = readCSV(isCal);
+		ArrayList<Map<String, String>> shapesList = readCSV(isShapes);
+		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
+		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
 	}
 }
