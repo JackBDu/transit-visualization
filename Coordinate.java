@@ -1,22 +1,22 @@
 // a class that represents a geographic location
 public class Coordinate {
-	private double x;
-	private double y;
+	private double lan;
+	private double lon;
 
-	public Coordinate(double x, double y) {
-		this.x = x;
-		this.y = y;
+	public Coordinate(double lan, double lon) {
+		this.lan = lan;
+		this.lon = lon;
 	}
 
-	public double getX() {
-		return this.x;
+	public double getLan() {
+		return this.lan;
 	}
 
-	public double getY() {
-		return this.y;
+	public double getLon() {
+		return this.lon;
 	}
 
 	public String toString() {
-		return "Coordinate("+this.x+", "+this.y+")";
+		return "Coordinate("+this.lan+", "+this.lon+")";
 	}
 }
