@@ -6,7 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.BufferedReader;
-public class Viz {
+
+public class GTFSParser {
 	public static void main(String[] args) throws IOException {
 		InputStream is = new FileInputStream("data/mta-new-york-city-transit_20150404_2233/calendar.txt");
 		ArrayList<Map<String, String>> al = readCSV(is);
@@ -30,5 +31,9 @@ public class Viz {
 		}
 		br.close();
 		return al;
+	}
+
+	private static ArrayList<Trajectory> parseTrips(String tripFile) {
+		
 	}
 }
