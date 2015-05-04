@@ -7,4 +7,16 @@ public class Coordinate {
 		this.x = x;
 		this.y = y;
 	}
+
+	public double getX() {
+		return this.x;
+	}
+
+	public double getY() {
+		return this.y;
+	}
+
+	public String toString() {
+		return "Coordinate("+this.x+", "+this.y+")";
+	}
 }
