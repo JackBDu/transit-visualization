@@ -1,11 +1,14 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TimeZone;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.text.SimpleDateFormat;
 
 public class GTFSParser {
 	public static void main(String[] args) throws IOException {
@@ -33,7 +36,7 @@ public class GTFSParser {
 		return al;
 	}
 
-	private static ArrayList<Trajectory> parseTrips(String filePath) {
+	private static ArrayList<Trajectory> parseTrips(String filePath) throws IOException {
 		ArrayList<Trajectory> trajectoryList;
 		InputStream isCal = new FileInputStream(filePath+"/calendar.txt");
 		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
@@ -43,5 +46,14 @@ public class GTFSParser {
 		ArrayList<Map<String, String>> shapesList = readCSV(isShapes);
 		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
 		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
+		return trajectoryList;
+	}
+
+	private static Long toElapsedTime(String time) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+		Date date = sdf.parse(time);
+		Long epoch = date.getTime() / 1000; // millisecond to second
+		return epoch;
 	}
 }
