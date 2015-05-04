@@ -1,18 +1,15 @@
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 // this class describes the complete path a vehicle takes through time and space
 public class Trajectory {
 	private String trip_id;
 	private String service_id;
-	private SortedMap<Long, Coordinate> trajectory = new TreeMap<Long, Coordinate>();
+	private SortedMap<Long, Coordinate> trajectory;
 
-	public Trajectory(String trip_id, String service_id, Long[] times, Coordinate[] coordinates) {
+	public Trajectory(String trip_id, String service_id, SortedMap<Long, Coordinate> trajectory) {
 		this.trip_id = trip_id;
 		this.service_id = service_id;
-		for (int i = 0; i < times.length; i++) {
-			this.trajectory.put(times[i], coordinates[i]);
-		}
+		this.trajectory = trajectory;
 	}
 
 	// returns the position of the vehicle at timestamp time

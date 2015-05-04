@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TimeZone;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -42,10 +44,26 @@ public class GTFSParser {
 		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
 		InputStream isTimes = new FileInputStream(filePath+"/stop_times.txt");
 		InputStream isTrips = new FileInputStream(filePath+"/trips.txt");
+		InputStream isStops = new FileInputStream(filePath+"/stops.txt");
 		ArrayList<Map<String, String>> calList = readCSV(isCal);
 		ArrayList<Map<String, String>> shapesList = readCSV(isShapes);
 		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
 		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
+		ArrayList<Map<String, String>> stopsList = readCSV(isStops);
+		for (int i = 0; i < tripsList.size(); i++) {
+			String trip_id = tripsList.get(i).get("trip_id");
+			String service_id = tripsList.get(i).get("service_id");
+			SortedMap<Long, Coordinate> map = new TreeMap();
+			for (int j = 0; j < timesList.size(); j++) {
+				String times_trip_id = timesList.get(j).get("trip_id");
+				if (times_trip_id == trip_id) {
+					String time = trip_id.substring(1, 9) + timesList.get(j).get("arrival_time");
+					Lang epoch = toElapsedTime(time);
+					Coordinate coordinate = new Coordinate(stopsList.get);
+				}
+			}
+			Trajectory trajectory = new Trajectory(trip_id, service_id, , );
+		}
 		return trajectoryList;
 	}
 
