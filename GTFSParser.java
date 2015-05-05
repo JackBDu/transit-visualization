@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class GTFSParser {
 	public static void main(String[] args) throws IOException {
@@ -38,8 +39,8 @@ public class GTFSParser {
 		return al;
 	}
 
-	private static ArrayList<Trajectory> parseTrips(String filePath) throws IOException {
-		ArrayList<Trajectory> trajectoryList;
+	private static ArrayList<Trajectory> parseTrips(String filePath) throws Exception {
+		ArrayList<Trajectory> trajectoryList = null;
 		InputStream isCal = new FileInputStream(filePath+"/calendar.txt");
 		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
 		InputStream isTimes = new FileInputStream(filePath+"/stop_times.txt");
@@ -50,19 +51,35 @@ public class GTFSParser {
 		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
 		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
 		ArrayList<Map<String, String>> stopsList = readCSV(isStops);
+		String trip_id = null;
+		String service_id = null;
+		SortedMap<Long, Coordinate> map = null;
 		for (int i = 0; i < tripsList.size(); i++) {
-			String trip_id = tripsList.get(i).get("trip_id");
-			String service_id = tripsList.get(i).get("service_id");
-			SortedMap<Long, Coordinate> map = new TreeMap();
+			trip_id = tripsList.get(i).get("trip_id");
+			service_id = tripsList.get(i).get("service_id");
+			map = new TreeMap<Long, Coordinate>();
 			for (int j = 0; j < timesList.size(); j++) {
 				String times_trip_id = timesList.get(j).get("trip_id");
 				if (times_trip_id == trip_id) {
 					String time = trip_id.substring(1, 9) + timesList.get(j).get("arrival_time");
-					Lang epoch = toElapsedTime(time);
-					Coordinate coordinate = new Coordinate(stopsList.get);
+					Long epoch = toElapsedTime(time);
+					String times_stop_id = timesList.get(j).get("stop_id");
+					Coordinate coordinate;
+					for (int k = 0; k < stopsList.size(); k++) {
+						String stop_id = stopsList.get(k).get("stop_id");
+						if (stop_id == times_stop_id) {
+							double lan = Double.parseDouble(stopsList.get(k).get("stop_lan"));
+							double lon = Double.parseDouble(stopsList.get(k).get("stop_lon"));
+							coordinate = new Coordinate(lan, lon);
+							map.put(epoch, coordinate);
+							break;
+						}
+					}
+					break;
 				}
 			}
-			Trajectory trajectory = new Trajectory(trip_id, service_id, , );
+			Trajectory trajectory = new Trajectory(trip_id, service_id, map);
+			trajectoryList.add(trajectory);
 		}
 		return trajectoryList;
 	}
