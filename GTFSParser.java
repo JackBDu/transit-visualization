@@ -14,10 +14,11 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 public class GTFSParser {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		InputStream is = new FileInputStream("data/mta-new-york-city-transit_20150404_2233/calendar.txt");
 		ArrayList<Map<String, String>> al = readCSV(is);
 		System.out.println(al.get(0).get("service_id"));
+		parseTrips("data/mta-new-york-city-transit_20150404_2233");
 	}
 
 	// reads a CSV stream
@@ -40,16 +41,22 @@ public class GTFSParser {
 	}
 
 	private static ArrayList<Trajectory> parseTrips(String filePath) throws Exception {
-		ArrayList<Trajectory> trajectoryList = null;
+		System.out.println("parsing starting");
+		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
 		InputStream isCal = new FileInputStream(filePath+"/calendar.txt");
 		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
 		InputStream isTimes = new FileInputStream(filePath+"/stop_times.txt");
 		InputStream isTrips = new FileInputStream(filePath+"/trips.txt");
 		InputStream isStops = new FileInputStream(filePath+"/stops.txt");
+		System.out.println("parsing cal");
 		ArrayList<Map<String, String>> calList = readCSV(isCal);
+		System.out.println("parsing shapes");
 		ArrayList<Map<String, String>> shapesList = readCSV(isShapes);
+		System.out.println("parsing times");
 		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
+		System.out.println("parsing trips");
 		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
+		System.out.println("parsing stops");
 		ArrayList<Map<String, String>> stopsList = readCSV(isStops);
 		String trip_id = null;
 		String service_id = null;
@@ -60,17 +67,17 @@ public class GTFSParser {
 			map = new TreeMap<Long, Coordinate>();
 			for (int j = 0; j < timesList.size(); j++) {
 				String times_trip_id = timesList.get(j).get("trip_id");
-				if (times_trip_id == trip_id) {
+				if (times_trip_id.equals(trip_id)) {
 					String time = trip_id.substring(1, 9) + timesList.get(j).get("arrival_time");
 					Long epoch = toElapsedTime(time);
 					String times_stop_id = timesList.get(j).get("stop_id");
 					Coordinate coordinate;
 					for (int k = 0; k < stopsList.size(); k++) {
 						String stop_id = stopsList.get(k).get("stop_id");
-						if (stop_id == times_stop_id) {
-							double lan = Double.parseDouble(stopsList.get(k).get("stop_lan"));
+						if (stop_id.equals(times_stop_id)) {
+							double lat = Double.parseDouble(stopsList.get(k).get("stop_lat"));
 							double lon = Double.parseDouble(stopsList.get(k).get("stop_lon"));
-							coordinate = new Coordinate(lan, lon);
+							coordinate = new Coordinate(lat, lon);
 							map.put(epoch, coordinate);
 							break;
 						}
