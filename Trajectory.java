@@ -18,7 +18,11 @@ public class Trajectory {
 	}
 	
 	// returns whether the vehicle is active at timestamp time
-	boolean isActive(Long time) {
+	private boolean isActive(Long time) {
 		return time < this.trajectory.lastKey() && time > this.trajectory.firstKey();
+	}
+
+	public String toString() {
+		return "trip_id: "+this.trip_id+"\nservice_id: "+this.service_id;
 	}
 }

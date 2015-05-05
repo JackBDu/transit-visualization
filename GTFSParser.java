@@ -15,10 +15,9 @@ import java.text.ParseException;
 
 public class GTFSParser {
 	public static void main(String[] args) throws Exception {
-		InputStream is = new FileInputStream("data/mta-new-york-city-transit_20150404_2233/calendar.txt");
-		ArrayList<Map<String, String>> al = readCSV(is);
-		System.out.println(al.get(0).get("service_id"));
-		parseTrips("data/mta-new-york-city-transit_20150404_2233");
+		ArrayList<Trajectory> Trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
+		System.out.println("DONE");
+		
 	}
 
 	// reads a CSV stream
@@ -43,11 +42,11 @@ public class GTFSParser {
 	private static ArrayList<Trajectory> parseTrips(String filePath) throws Exception {
 		System.out.println("parsing starting");
 		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
-		InputStream isCal = new FileInputStream(filePath+"/calendar.txt");
-		InputStream isShapes = new FileInputStream(filePath+"/shapes.txt");
-		InputStream isTimes = new FileInputStream(filePath+"/stop_times.txt");
-		InputStream isTrips = new FileInputStream(filePath+"/trips.txt");
-		InputStream isStops = new FileInputStream(filePath+"/stops.txt");
+		InputStream isCal = new FileInputStream(filePath+"/calendar.csv");
+		InputStream isShapes = new FileInputStream(filePath+"/shapes.csv");
+		InputStream isTimes = new FileInputStream(filePath+"/stop_times.csv");
+		InputStream isTrips = new FileInputStream(filePath+"/trips.csv");
+		InputStream isStops = new FileInputStream(filePath+"/stops.csv");
 		System.out.println("parsing cal");
 		ArrayList<Map<String, String>> calList = readCSV(isCal);
 		System.out.println("parsing shapes");
@@ -82,7 +81,6 @@ public class GTFSParser {
 							break;
 						}
 					}
-					break;
 				}
 			}
 			Trajectory trajectory = new Trajectory(trip_id, service_id, map);
