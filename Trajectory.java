@@ -12,14 +12,26 @@ public class Trajectory {
 		this.trajectory = trajectory;
 	}
 
+	public String getTripId() {
+		return this.trip_id;
+	}
+
+	public String getServiceId() {
+		return this.service_id;
+	}
+
 	// returns the position of the vehicle at timestamp time
-	private Coordinate getPosition(Long time) {
+	public Coordinate getPosition(Long time) {
 		return this.trajectory.get(time);
 	}
 	
 	// returns whether the vehicle is active at timestamp time
-	private boolean isActive(Long time) {
+	public boolean isActive(Long time) {
 		return time < this.trajectory.lastKey() && time > this.trajectory.firstKey();
+	}
+
+	public SortedMap<Long, Coordinate> getMap() {
+		return this.trajectory;
 	}
 
 	public String toString() {

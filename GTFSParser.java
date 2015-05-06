@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TimeZone;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,8 +18,10 @@ import java.text.ParseException;
 
 public class GTFSParser {
 	public static void main(String[] args) throws Exception {
-		ArrayList<Trajectory> Trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
-		System.out.println("DONE");
+		ArrayList<Trajectory> trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
+		System.out.println("Parsing DONE");
+		writeOut(trajectories);
+		System.out.println("Writing DONE");
 		
 	}
 
@@ -95,5 +100,23 @@ public class GTFSParser {
 		Date date = sdf.parse(time);
 		Long epoch = date.getTime() / 1000; // millisecond to second
 		return epoch;
+	}
+
+	private static void writeOut(ArrayList<Trajectory> trajectories) throws Exception {
+		PrintWriter pw = new PrintWriter(
+			new OutputStreamWriter(
+			new FileOutputStream("data/"+"translatedData.csv"), "UTF-8"));
+		
+		pw.println("trip_id,service_id,time,lat,lon");
+		for (Trajectory trajectory : trajectories) {
+			String tripId = trajectory.getTripId();
+			String serviceId = trajectory.getServiceId();
+			for (Map.Entry<Long, Coordinate> entry : trajectory.getMap().entrySet()) {
+				Long time = entry.getKey();
+				Coordinate coordinate = entry.getValue();
+				pw.println(tripId+","+serviceId+","+time+","+coordinate.getLat()+","+coordinate.getLon());
+			}
+		}
+		pw.close();
 	}
 }
