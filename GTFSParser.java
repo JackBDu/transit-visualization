@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 public class GTFSParser {
+	/*
 	public static void main(String[] args) throws Exception {
 		ArrayList<Trajectory> trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
 		System.out.println("Parsing DONE");
@@ -24,11 +25,13 @@ public class GTFSParser {
 		System.out.println("Writing DONE");
 		
 	}
+	*/
 
 	// reads a CSV stream
-	private static ArrayList<Map<String, String>> readCSV(InputStream csv) throws IOException {
+	public static ArrayList<Map<String, String>> readCSV(String filePath) throws IOException {
+		InputStream is = new FileInputStream(filePath);
 		ArrayList<Map<String, String>> al = new ArrayList<Map<String, String>>();
-		BufferedReader br = new BufferedReader(new InputStreamReader(csv));
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		String[] headerLine = br.readLine().split(","); // reads the header of the file
 		String line = br.readLine(); // reads the first line of data
 		while (line != null) {
@@ -44,24 +47,24 @@ public class GTFSParser {
 		return al;
 	}
 
-	private static ArrayList<Trajectory> parseTrips(String filePath) throws Exception {
+	private static ArrayList<Trajectory> parseTrips(String folderPath) throws Exception {
 		System.out.println("parsing starting");
 		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
-		InputStream isCal = new FileInputStream(filePath+"/calendar.csv");
-		InputStream isShapes = new FileInputStream(filePath+"/shapes.csv");
-		InputStream isTimes = new FileInputStream(filePath+"/stop_times.csv");
-		InputStream isTrips = new FileInputStream(filePath+"/trips.csv");
-		InputStream isStops = new FileInputStream(filePath+"/stops.csv");
+		String calendarFilePath = folderPath+"/calendar.csv";
+		String shapesFilePath = folderPath+"/shapes.csv";
+		String stopTimesFilePath = folderPath+"/stop_times.csv";
+		String tripsFilePath = folderPath+"/trips.csv";
+		String stopsFilePath = folderPath+"/stops.csv";
 		System.out.println("parsing cal");
-		ArrayList<Map<String, String>> calList = readCSV(isCal);
+		ArrayList<Map<String, String>> calList = readCSV(calendarFilePath);
 		System.out.println("parsing shapes");
-		ArrayList<Map<String, String>> shapesList = readCSV(isShapes);
+		ArrayList<Map<String, String>> shapesList = readCSV(shapesFilePath);
 		System.out.println("parsing times");
-		ArrayList<Map<String, String>> timesList = readCSV(isTimes);
+		ArrayList<Map<String, String>> timesList = readCSV(stopTimesFilePath);
 		System.out.println("parsing trips");
-		ArrayList<Map<String, String>> tripsList = readCSV(isTrips);
+		ArrayList<Map<String, String>> tripsList = readCSV(tripsFilePath);
 		System.out.println("parsing stops");
-		ArrayList<Map<String, String>> stopsList = readCSV(isStops);
+		ArrayList<Map<String, String>> stopsList = readCSV(stopsFilePath);
 		String trip_id = null;
 		String service_id = null;
 		SortedMap<Long, Coordinate> map = null;
