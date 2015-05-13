@@ -27,7 +27,8 @@ public class Trajectory {
 	}
 
 	// returns the position of the vehicle at timestamp time
-	public Coordinate getPosition(long time) {
+	public Coordinate getPosition(Long time) {
+		//time = this.trajectory.headMap(time).lastKey();
 		return this.trajectory.get(time).getCord();
 	}
 	

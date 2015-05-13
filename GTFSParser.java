@@ -28,6 +28,10 @@ public class GTFSParser {
 	*/
 	public static void main(String[] args) throws Exception {
 		ArrayList<Trajectory> trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
+		for (Trajectory trajectory : trajectories) {
+			trajectory.getTrajectory();
+			System.out.println(trajectory.getTrajectory().isEmpty());
+		}
 	}
 
 	// reads a CSV stream
@@ -112,17 +116,21 @@ public class GTFSParser {
 			arrivalTime = toSeconds(time.get("arrival_time"));
 			departureTime = toSeconds(time.get("departure_time"));
 			if (arrivalTime < prevTime || prevTime == 0) {
-				System.out.println("trajectory created");
-				trajectoryList.add(new Trajectory(tripId, serviceId, routeId, trajectory));
+				if (prevTime != 0) {
+					System.out.println("trajectory created");
+					trajectoryList.add(new Trajectory(tripId, serviceId, routeId, trajectory));
+				}
 				tripId = time.get("trip_id");
 				routeId = getRouteIdFromTripId(tripId);
 				serviceId = getServiceIdFromTripId(tripId);
 				trajectory = new TreeMap<Long, Stop>();
 			}
 			String stopId = time.get("stop_id");
+			trajectory.put(arrivalTime, stopMap.get(stopId));
 			if (arrivalTime != departureTime) {
 				trajectory.put(departureTime, stopMap.get(stopId));
 			}
+			prevTime = arrivalTime;
 		}
 		System.out.println("trajectoryList created");
 
