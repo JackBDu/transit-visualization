@@ -26,16 +26,16 @@ public class App extends JPanel {
 	String day = "SUN";
 	boolean isPaused = false;
 	public App(ArrayList<Map<String, String>> shapes) {
-		this.setBackground(new Color(230, 230, 230));				// set background color to white
+		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
 		this.shapes = shapes;
-		this.colors[0] = new Color(0,0,0);
-		this.colors[1] = new Color(0,0,255);
-		this.colors[2] = new Color(0,255,0);
-		this.colors[3] = new Color(0,255,255);
-		this.colors[4] = new Color(255,0,0);
-		this.colors[5] = new Color(255,0,255);
-		this.colors[6] = new Color(255,255,0);
+		this.colors[0] = new Color(200,200,200);
+		this.colors[1] = new Color(100,100,255);
+		this.colors[2] = new Color(100,255,100);
+		this.colors[3] = new Color(100,255,255);
+		this.colors[4] = new Color(255,100,100);
+		this.colors[5] = new Color(255,100,255);
+		this.colors[6] = new Color(255,255,100);
 	}
 
 	public void setTrajectories(ArrayList<Trajectory> trajectories) {
@@ -78,7 +78,7 @@ public class App extends JPanel {
 			}
 		}
 
-		g.setColor(Color.BLACK);
+		g.setColor(Color.WHITE);
 		for (Trajectory trajectory : this.trajectories) {
 			//System.out.println(trajectory.getPosition(this.time));
 			if (this.day.equals(trajectory.getServiceId().substring(9, 12))) {
@@ -194,7 +194,7 @@ public class App extends JPanel {
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
-		frame.setBackground(Color.WHITE);
+		frame.setBackground(Color.BLACK);
 
 
 		while(true) {
