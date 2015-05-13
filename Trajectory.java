@@ -2,39 +2,48 @@ import java.util.SortedMap;
 
 // this class describes the complete path a vehicle takes through time and space
 public class Trajectory {
-	private String trip_id;
-	private String service_id;
-	private SortedMap<Long, Coordinate> trajectory;
+	private String tripId;
+	private String serviceId;
+	private String routeId;
+	private SortedMap<Long, Stop> trajectory;
 
-	public Trajectory(String trip_id, String service_id, SortedMap<Long, Coordinate> trajectory) {
-		this.trip_id = trip_id;
-		this.service_id = service_id;
+	public Trajectory(String tripId, String serviceId, String routeId, SortedMap<Long, Stop> trajectory) {
+		this.tripId = tripId;
+		this.serviceId = serviceId;
+		this.routeId = routeId;
 		this.trajectory = trajectory;
 	}
 
 	public String getTripId() {
-		return this.trip_id;
+		return this.tripId;
 	}
 
 	public String getServiceId() {
-		return this.service_id;
+		return this.serviceId;
+	}
+
+	public String getRouteId() {
+		return this.routeId;
 	}
 
 	// returns the position of the vehicle at timestamp time
-	public Coordinate getPosition(Long time) {
-		return this.trajectory.get(time);
+	public Coordinate getPosition(long time) {
+		return this.trajectory.get(time).getCord();
 	}
 	
 	// returns whether the vehicle is active at timestamp time
-	public boolean isActive(Long time) {
+	public boolean isActive(long time) {
 		return time < this.trajectory.lastKey() && time > this.trajectory.firstKey();
 	}
 
-	public SortedMap<Long, Coordinate> getMap() {
+	public SortedMap<Long, Stop> getTrajectory() {
 		return this.trajectory;
 	}
 
 	public String toString() {
-		return "trip_id: "+this.trip_id+"\nservice_id: "+this.service_id;
+		return "Trajectory {\n"
+			+ "tripId: "+this.tripId+",\n"
+			+ "serviceId: "+this.serviceId+",\n"
+			+ "}\n";
 	}
 }
