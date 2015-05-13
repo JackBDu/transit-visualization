@@ -20,7 +20,7 @@ import java.util.*;
 
 public class App extends JPanel {
 	ArrayList<Map<String, String>> shapes;
-	Color[] colors = new Color[7];
+	Color[] colors = new Color[14];
 	long time = 0;
 	ArrayList<Trajectory> trajectories; 
 	String day = "SUN";
@@ -30,13 +30,20 @@ public class App extends JPanel {
 		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
 		this.shapes = shapes;
-		this.colors[0] = new Color(200,200,200);
-		this.colors[1] = new Color(100,100,255);
-		this.colors[2] = new Color(100,255,100);
-		this.colors[3] = new Color(100,255,255);
-		this.colors[4] = new Color(255,100,100);
-		this.colors[5] = new Color(255,100,255);
-		this.colors[6] = new Color(255,255,100);
+		this.colors[0] = new Color(100,100,100);
+		this.colors[1] = new Color(0,0,100);
+		this.colors[2] = new Color(0,100,0);
+		this.colors[3] = new Color(0,100,100);
+		this.colors[4] = new Color(100,0,0);
+		this.colors[5] = new Color(100,0,100);
+		this.colors[6] = new Color(100,100,0);
+		this.colors[7] = new Color(150,150,150);
+		this.colors[8] = new Color(0,0,150);
+		this.colors[9] = new Color(0,150,0);
+		this.colors[10] = new Color(0,150,150);
+		this.colors[11] = new Color(150,0,0);
+		this.colors[12] = new Color(150,0,150);
+		this.colors[13] = new Color(150,150,0);
 	}
 
 	public void setTrajectories(ArrayList<Trajectory> trajectories) {
@@ -84,8 +91,9 @@ public class App extends JPanel {
 				}
 			}
 		}
-
-		g.setColor(Color.WHITE);
+		colorN = 0;
+		Color dotColor = new Color(this.colors[colorN].getRed()+105, this.colors[colorN].getGreen()+105, this.colors[colorN].getBlue()+105);
+		g.setColor(dotColor);
 		for (Trajectory trajectory : this.trajectories) {
 			//System.out.println(trajectory.getPosition(this.time));
 			if (this.day.equals(trajectory.getServiceId().substring(9, 12))) {
@@ -95,6 +103,13 @@ public class App extends JPanel {
 				Double x = screenCord.getLon();
 				g.fillOval(x.intValue(), y.intValue(), 3, 3);
 			}
+			if (colorN == this.colors.length - 1) {
+				colorN = 0;
+			} else {
+				colorN++;
+			}
+			dotColor = new Color(this.colors[colorN].getRed()+105, this.colors[colorN].getGreen()+105, this.colors[colorN].getBlue()+105);
+			g.setColor(dotColor);
 		}
 	} // paint() ends
 
