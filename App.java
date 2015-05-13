@@ -12,6 +12,9 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.awt.image.*;
+import javax.imageio.*;
+import java.io.*;
 
 /*
  * @ version 0.0.1
@@ -27,6 +30,10 @@ public class App extends JPanel {
 	boolean isPaused = false;
 	boolean isHiden = true;
 	int sleepTime = 6;
+	BufferedImage img;
+	String[] routeIds;
+	int currentRoute = 0;
+	boolean singleRouteMode = false;
 	public App(ArrayList<Map<String, String>> shapes) {
 		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
@@ -45,6 +52,39 @@ public class App extends JPanel {
 		this.colors[11] = new Color(150,0,0);
 		this.colors[12] = new Color(150,0,150);
 		this.colors[13] = new Color(150,150,0);
+	}
+
+	public void loadImage() throws Exception {
+		this.img = ImageIO.read(new File("data/map.png"));
+	}
+
+	public void parseRoutes() throws Exception {
+		ArrayList<Map<String, String>> routes = GTFSParser.readCSV("data/mta-new-york-city-transit_20150404_2233/routes.csv");
+		System.out.println(routes.size());
+		this.routeIds = new String[routes.size()];
+		for (int i = 0; i < routes.size(); i++) {
+			this.routeIds[i] = routes.get(i).get("route_id");
+		}
+	}
+
+	public void prevRoute() {
+		if (this.currentRoute == 0) {
+			this.currentRoute = this.routeIds.length - 1;
+		} else {
+			this.currentRoute--;
+		}
+	}
+
+	public void nextRoute() {
+		if (this.currentRoute == this.routeIds.length - 1) {
+			this.currentRoute = 0;
+		} else {
+			this.currentRoute++;
+		}	
+	}
+
+	public void allRoutes() {
+		this.singleRouteMode = !this.singleRouteMode;
 	}
 
 	public void setTrajectories(ArrayList<Trajectory> trajectories) {
@@ -69,6 +109,7 @@ public class App extends JPanel {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.drawImage(img, 0, 0, null);
 		if (!this.isHiden) {
 			g.setColor(this.colors[colorN]);
 			for(int i = 1; i < this.shapes.size(); i++) {
@@ -98,11 +139,13 @@ public class App extends JPanel {
 		for (Trajectory trajectory : this.trajectories) {
 			//System.out.println(trajectory.getPosition(this.time));
 			if (this.day.equals(trajectory.getServiceId().substring(9, 12))) {
-				Coordinate screenCord = formatCord(trajectory.getPosition(this.time));
-				//System.out.println(this.time);
-				Double y = screenCord.getLat();
-				Double x = screenCord.getLon();
-				g.fillOval(x.intValue(), y.intValue(), 3, 3);
+				if (!this.singleRouteMode || this.routeIds[this.currentRoute].equals(trajectory.getRouteId())) {
+					Coordinate screenCord = formatCord(trajectory.getPosition(this.time));
+					//System.out.println(this.time);
+					Double y = screenCord.getLat();
+					Double x = screenCord.getLon();
+					g.fillOval(x.intValue(), y.intValue(), 3, 3);
+				}
 			}
 			if (colorN == this.colors.length - 1) {
 				colorN = 0;
@@ -130,20 +173,21 @@ public class App extends JPanel {
 
 	public String getTimeString() {
 		String hourStr, minStr, secStr;
+		String routeId = this.routeIds[this.currentRoute];
 		int hour = (int) this.time/3600;
 		hourStr = hour<10?"0"+hour:""+hour;
 		int  min = (int) (this.time - hour*3600)/60;
 		minStr = min<10?"0"+min:""+min;
 		int sec = (int) (this.time - hour*3600 - min*60);
 		secStr = sec<10?"0"+sec:""+sec;
-		return this.day + " " + hourStr + ":" + minStr + ":" + secStr;
+		return this.day + " " + hourStr + ":" + minStr + ":" + secStr + "  " + "Route " + routeId;
 	}
 
 	// update the status
 	public void update() {
 		if (!this.isPaused) {
 			if (this.time < 86400) {
-				this.time += 1;
+				this.time += 2;
 			} else {
 				this.time = 0;
 			}
@@ -161,8 +205,11 @@ public class App extends JPanel {
 		JButton pbtn = new JButton("Play/Pause");
 		JButton sunBtn = new JButton("Sunday");
 		JButton satBtn = new JButton("Saturday");
-		JButton wkdBtn = new JButton("Weekday");
+		JButton wkdBtn = new JButton("Workday");
 		JButton hideBtn = new JButton("Show/Hide");
+		JButton prevBtn = new JButton("Prev Route");
+		JButton nextBtn = new JButton("Next Route");
+		JButton allBtn = new JButton("All Routes");
 		JLabel timeLabel = new JLabel();
 		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
 		JScrollBar speedBar = new JScrollBar(JScrollBar.HORIZONTAL, 5, 1, 1, 10);
@@ -199,6 +246,21 @@ public class App extends JPanel {
 				app.handleHide();
 			}
 		});
+		prevBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				app.prevRoute();
+			}
+		});
+		nextBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				app.nextRoute();
+			}
+		});
+		allBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				app.allRoutes();
+			}
+		});
 		scrollBar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				app.setTime(e.getValue());
@@ -215,10 +277,15 @@ public class App extends JPanel {
 		sideBar.add(satBtn);
 		sideBar.add(wkdBtn);
 		sideBar.add(hideBtn);
+		sideBar.add(prevBtn);
+		sideBar.add(nextBtn);
+		sideBar.add(allBtn);
 		//sideBar.add(hourTF);
 		//sideBar.add(minTF);
 		//sideBar.add(secTF);
 		app.setSize(600, 600);
+		app.loadImage();
+		app.parseRoutes();
 		app.setTrajectories(trajectories);
 		// initialize the frame
 		frame.setSize(800, 600);
