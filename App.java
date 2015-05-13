@@ -97,6 +97,10 @@ public class App extends JPanel {
 		return new Coordinate(lat, lon);
 	}
 
+	public void setTime(long time) {
+		this.time = time;
+	}
+
 	// update the status
 	public void update() {
 		if (!this.isPaused) {
@@ -123,7 +127,7 @@ public class App extends JPanel {
 		JTextField hourTF = new JTextField(3);
 		JTextField minTF = new JTextField(3);
 		JTextField secTF = new JTextField(3);
-		JScrollBar scrollBar = new JScrollBar(0, 0, 1, 0, 86400);
+		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
 		Dimension d = new Dimension(100,50);
 		pbtn.setSize(d);
 		sunBtn.setSize(d);
@@ -154,6 +158,11 @@ public class App extends JPanel {
 				app.setDay("WKD");
 			}
 		});
+		scrollBar.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				app.setTime(e.getValue());
+			}
+		});
 		sideBar.add(pbtn);
 		sideBar.add(sunBtn);
 		sideBar.add(satBtn);
@@ -179,6 +188,7 @@ public class App extends JPanel {
 			app.update();
 			app.repaint();
 			Thread.sleep(10);
+			scrollBar.setValue((int)app.time);
 		}
 		
 	} // main() ends
