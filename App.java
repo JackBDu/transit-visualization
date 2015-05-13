@@ -25,6 +25,7 @@ public class App extends JPanel {
 	ArrayList<Trajectory> trajectories; 
 	String day = "SUN";
 	boolean isPaused = false;
+	boolean isHiden = true;
 	public App(ArrayList<Map<String, String>> shapes) {
 		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
@@ -46,6 +47,10 @@ public class App extends JPanel {
 		this.isPaused = !this.isPaused;
 	}
 
+	public void handleHide() {
+		this.isHiden = !this.isHiden;
+	}
+
 	public void setDay(String day) {
 		this.day = day;
 	}
@@ -56,25 +61,27 @@ public class App extends JPanel {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setColor(this.colors[colorN]);
-		for(int i = 1; i < this.shapes.size(); i++) {
-			if (Integer.parseInt(this.shapes.get(i).get("shape_pt_sequence")) != 0) {
-				double startLat = Double.parseDouble(this.shapes.get(i-1).get("shape_pt_lat"));
-				double startLon = Double.parseDouble(this.shapes.get(i-1).get("shape_pt_lon"));
-				double endLat = Double.parseDouble(this.shapes.get(i).get("shape_pt_lat"));
-				double endLon = Double.parseDouble(this.shapes.get(i).get("shape_pt_lon"));
-				Double y1 = 600 - (startLat - 40.45) * 1200;
-				Double y2 = 600 - (endLat - 40.45) * 1200;
-				Double x1 = (startLon + 74.3) * 1200;
-				Double x2 = (endLon + 74.3) * 1200;
-				g.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
-			} else {
-				if (colorN == this.colors.length - 1) {
-					colorN = 0;
+		if (!this.isHiden) {
+			g.setColor(this.colors[colorN]);
+			for(int i = 1; i < this.shapes.size(); i++) {
+				if (Integer.parseInt(this.shapes.get(i).get("shape_pt_sequence")) != 0) {
+					double startLat = Double.parseDouble(this.shapes.get(i-1).get("shape_pt_lat"));
+					double startLon = Double.parseDouble(this.shapes.get(i-1).get("shape_pt_lon"));
+					double endLat = Double.parseDouble(this.shapes.get(i).get("shape_pt_lat"));
+					double endLon = Double.parseDouble(this.shapes.get(i).get("shape_pt_lon"));
+					Double y1 = 600 - (startLat - 40.45) * 1200;
+					Double y2 = 600 - (endLat - 40.45) * 1200;
+					Double x1 = (startLon + 74.3) * 1200;
+					Double x2 = (endLon + 74.3) * 1200;
+					g.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
 				} else {
-					colorN++;
+					if (colorN == this.colors.length - 1) {
+						colorN = 0;
+					} else {
+						colorN++;
+					}
+					g.setColor(this.colors[colorN]);
 				}
-				g.setColor(this.colors[colorN]);
 			}
 		}
 
@@ -135,9 +142,7 @@ public class App extends JPanel {
 		JButton sunBtn = new JButton("Sunday");
 		JButton satBtn = new JButton("Saturday");
 		JButton wkdBtn = new JButton("Weekday");
-		JTextField hourTF = new JTextField(3);
-		JTextField minTF = new JTextField(3);
-		JTextField secTF = new JTextField(3);
+		JButton hideBtn = new JButton("Show/Hide");
 		JLabel timeLabel = new JLabel();
 		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
 		Dimension d = new Dimension(100,50);
@@ -145,9 +150,7 @@ public class App extends JPanel {
 		sunBtn.setSize(d);
 		satBtn.setSize(d);
 		wkdBtn.setSize(d);
-		hourTF.setSize(d);
-		minTF.setSize(d);
-		secTF.setSize(d);
+		hideBtn.setSize(d);
 
 		final App app = new App(shapes);
 		pbtn.addActionListener(new ActionListener() {
@@ -170,6 +173,11 @@ public class App extends JPanel {
 				app.setDay("WKD");
 			}
 		});
+		hideBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				app.handleHide();
+			}
+		});
 		scrollBar.addAdjustmentListener(new AdjustmentListener() {
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				app.setTime(e.getValue());
@@ -179,6 +187,7 @@ public class App extends JPanel {
 		sideBar.add(sunBtn);
 		sideBar.add(satBtn);
 		sideBar.add(wkdBtn);
+		sideBar.add(hideBtn);
 		//sideBar.add(hourTF);
 		//sideBar.add(minTF);
 		//sideBar.add(secTF);
