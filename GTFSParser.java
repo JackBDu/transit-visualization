@@ -29,8 +29,8 @@ public class GTFSParser {
 	public static void main(String[] args) throws Exception {
 		ArrayList<Trajectory> trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
 		for (Trajectory trajectory : trajectories) {
-			trajectory.getTrajectory();
-			System.out.println(trajectory.getTrajectory().isEmpty());
+			long a = 27000;
+			System.out.println(trajectory.getPosition(a));
 		}
 	}
 

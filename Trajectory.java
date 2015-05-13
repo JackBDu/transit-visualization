@@ -1,4 +1,5 @@
 import java.util.SortedMap;
+import java.util.Map;
 
 // this class describes the complete path a vehicle takes through time and space
 public class Trajectory {
@@ -27,14 +28,23 @@ public class Trajectory {
 	}
 
 	// returns the position of the vehicle at timestamp time
-	public Coordinate getPosition(Long time) {
-		//time = this.trajectory.headMap(time).lastKey();
-		return this.trajectory.get(time).getCord();
+	public Coordinate getPosition(long time) {
+		Stop stop = null;
+		if (this.isActive(time)) {
+			for (Map.Entry<Long, Stop> entry : this.trajectory.entrySet()) {
+				if (entry.getKey() >= time) {
+					stop = entry.getValue();
+					break;
+				}
+			}
+		}
+		stop = this.trajectory.get(this.trajectory.firstKey());
+		return stop.getCord();
 	}
 	
 	// returns whether the vehicle is active at timestamp time
 	public boolean isActive(long time) {
-		return time < this.trajectory.lastKey() && time > this.trajectory.firstKey();
+		return time <= this.trajectory.lastKey() && time >= this.trajectory.firstKey();
 	}
 
 	public SortedMap<Long, Stop> getTrajectory() {
