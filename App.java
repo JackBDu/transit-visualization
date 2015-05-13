@@ -74,9 +74,9 @@ public class App extends JPanel {
 			//System.out.println(trajectory.getPosition(this.time));
 			Coordinate screenCord = formatCord(trajectory.getPosition(this.time));
 			//System.out.println(this.time);
-			Double x = screenCord.getLat();
-			Double y = screenCord.getLon();
-			g.fillOval(x.intValue(), y.intValue(), 5, 5);
+			Double y = screenCord.getLat();
+			Double x = screenCord.getLon();
+			g.fillOval(x.intValue(), y.intValue(), 2, 2);
 		}
 	} // paint() ends
 
@@ -89,7 +89,7 @@ public class App extends JPanel {
 	// update the status
 	public void update() {
 		if (this.time < 86400) {
-			this.time += 100;
+			this.time += 1;
 		} else {
 			this.time = 0;
 		}

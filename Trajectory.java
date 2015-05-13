@@ -29,19 +29,32 @@ public class Trajectory {
 
 	// returns the position of the vehicle at timestamp time
 	public Coordinate getPosition(long time) {
-		Stop stop = null;
+		Stop nextStop = null;
+		Stop prevStop = null;
+		long prevTime = 0;
+		long nextTime = 0;
 		if (this.isActive(time)) {
 			for (Map.Entry<Long, Stop> entry : this.trajectory.entrySet()) {
-				if (entry.getKey() >= time) {
-					stop = entry.getValue();
-					System.out.println("haha"+stop);
+				nextTime = entry.getKey();
+				if (nextTime == time) { // return that cord if time is in the entries
+					return entry.getValue().getCord();
+				} else if (nextTime > time) { // wait to calculate cord if time is in between
+					nextStop = entry.getValue();
 					break;
 				}
+				prevStop = entry.getValue();
+				prevTime = nextTime;
 			}
-		} else {
-			stop = this.trajectory.get(this.trajectory.firstKey());
+		} else { // doesn't show the stop if not active
+			return new Coordinate(0, 0);
 		}
-		return stop.getCord();
+		double prevLat = prevStop.getLat();
+		double prevLon = prevStop.getLon();
+		double nextLat = nextStop.getLat();
+		double nextLon = nextStop.getLon();
+		double lat = prevLat + (nextLat - prevLat) * (time - prevTime) / (nextTime - prevTime);
+		double lon = prevLon + (nextLon - prevLon) * (time - prevTime) / (nextTime - prevTime);
+		return new Coordinate(lat, lon);
 	}
 	
 	// returns whether the vehicle is active at timestamp time

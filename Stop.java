@@ -27,6 +27,14 @@ public class Stop {
 		return this.cord;
 	}
 
+	public double getLat() {
+		return this.cord.getLat();
+	}
+
+	public double getLon() {
+		return this.cord.getLon();
+	}
+
 	public int getType() {
 		return this.type;
 	}
