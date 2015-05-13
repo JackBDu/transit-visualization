@@ -26,13 +26,14 @@ public class GTFSParser {
 		
 	}
 	*/
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 		ArrayList<Trajectory> trajectories = parseTrips("data/mta-new-york-city-transit_20150404_2233");
 		for (Trajectory trajectory : trajectories) {
 			long a = 27000;
 			System.out.println(trajectory.getPosition(a));
 		}
 	}
+	*/
 
 	// reads a CSV stream
 	public static ArrayList<Map<String, String>> readCSV(String filePath) throws IOException {
@@ -66,7 +67,7 @@ public class GTFSParser {
 		return tripId.substring(0, 12);
 	}
 
-	private static ArrayList<Trajectory> parseTrips(String folderPath) throws Exception {
+	public static ArrayList<Trajectory> parseTrips(String folderPath) throws Exception {
 		System.out.println("parsing starting");
 		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
 		String calendarFilePath = folderPath+"/calendar.csv";

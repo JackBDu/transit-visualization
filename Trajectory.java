@@ -34,11 +34,13 @@ public class Trajectory {
 			for (Map.Entry<Long, Stop> entry : this.trajectory.entrySet()) {
 				if (entry.getKey() >= time) {
 					stop = entry.getValue();
+					System.out.println("haha"+stop);
 					break;
 				}
 			}
+		} else {
+			stop = this.trajectory.get(this.trajectory.firstKey());
 		}
-		stop = this.trajectory.get(this.trajectory.firstKey());
 		return stop.getCord();
 	}
 	

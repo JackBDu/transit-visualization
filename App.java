@@ -21,6 +21,8 @@ import java.util.*;
 public class App extends JPanel {
 	ArrayList<Map<String, String>> shapes;
 	Color[] colors = new Color[7];
+	long time = 27000;
+	ArrayList<Trajectory> trajectories; 
 	public App(ArrayList<Map<String, String>> shapes) {
 		this.setBackground(new Color(230, 230, 230));				// set background color to white
 		this.setFocusable(true);
@@ -32,6 +34,10 @@ public class App extends JPanel {
 		this.colors[4] = new Color(255,0,0);
 		this.colors[5] = new Color(255,0,255);
 		this.colors[6] = new Color(255,255,0);
+	}
+
+	public void setTrajectories(ArrayList<Trajectory> trajectories) {
+		this.trajectories = trajectories;
 	}
 
 	// paint the whole board
@@ -61,17 +67,41 @@ public class App extends JPanel {
 				g.setColor(this.colors[colorN]);
 			}
 		}
+
+		g.setColor(Color.BLACK);
+		System.out.println(this.trajectories.get(0).getPosition(this.time));
+		for (Trajectory trajectory : this.trajectories) {
+			//System.out.println(trajectory.getPosition(this.time));
+			Coordinate screenCord = formatCord(trajectory.getPosition(this.time));
+			//System.out.println(this.time);
+			Double x = screenCord.getLat();
+			Double y = screenCord.getLon();
+			g.fillOval(x.intValue(), y.intValue(), 5, 5);
+		}
 	} // paint() ends
+
+	public Coordinate formatCord(Coordinate cord) {
+		Double lon = (cord.getLon() + 74.4) * 1000;
+		Double lat = 600 - (cord.getLat() - 40.4) * 1000;
+		return new Coordinate(lat, lon);
+	}
 
 	// update the status
 	public void update() {
+		if (this.time < 86400) {
+			this.time += 100;
+		} else {
+			this.time = 0;
+		}
 	} // update() ends
 	
 	// main function for the board
 	public static void main(String[] args) throws Exception {
 		ArrayList<Map<String, String>> shapes = GTFSParser.readCSV("data/mta-new-york-city-transit_20150404_2233/shapes.csv");
+		ArrayList<Trajectory> trajectories = GTFSParser.parseTrips("data/mta-new-york-city-transit_20150404_2233");
 		JFrame frame = new JFrame("New York Subway");
 		App app = new App(shapes);
+		app.setTrajectories(trajectories);
 		// initialize the frame
 		frame.setSize(800, 600);
 		frame.add(app);
@@ -80,10 +110,12 @@ public class App extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 
+
 		while(true) {
 			app.update();
 			app.repaint();
-			Thread.sleep(1000);
+			Thread.sleep(10);
 		}
+		
 	} // main() ends
 } // App ends
