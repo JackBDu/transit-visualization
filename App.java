@@ -26,6 +26,7 @@ public class App extends JPanel {
 	String day = "SUN";
 	boolean isPaused = false;
 	boolean isHiden = true;
+	int sleepTime = 6;
 	public App(ArrayList<Map<String, String>> shapes) {
 		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
@@ -123,6 +124,10 @@ public class App extends JPanel {
 		this.time = time;
 	}
 
+	public void setSpeed(int sleepTime) {
+		this.sleepTime = sleepTime;
+	}
+
 	public String getTimeString() {
 		String hourStr, minStr, secStr;
 		int hour = (int) this.time/3600;
@@ -160,6 +165,7 @@ public class App extends JPanel {
 		JButton hideBtn = new JButton("Show/Hide");
 		JLabel timeLabel = new JLabel();
 		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
+		JScrollBar speedBar = new JScrollBar(JScrollBar.HORIZONTAL, 5, 1, 1, 10);
 		Dimension d = new Dimension(100,50);
 		pbtn.setSize(d);
 		sunBtn.setSize(d);
@@ -198,6 +204,12 @@ public class App extends JPanel {
 				app.setTime(e.getValue());
 			}
 		});
+		speedBar.addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				app.setSpeed(11 - e.getValue());
+			}
+		});
+		sideBar.add(speedBar);
 		sideBar.add(pbtn);
 		sideBar.add(sunBtn);
 		sideBar.add(satBtn);
@@ -224,7 +236,7 @@ public class App extends JPanel {
 		while(true) {
 			app.update();
 			app.repaint();
-			Thread.sleep(4);
+			Thread.sleep(app.sleepTime);
 			scrollBar.setValue((int)app.time);
 			timeLabel.setText(app.getTimeString());
 		}
