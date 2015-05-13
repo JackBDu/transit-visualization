@@ -118,7 +118,7 @@ public class GTFSParser {
 			departureTime = toSeconds(time.get("departure_time"));
 			if (arrivalTime < prevTime || prevTime == 0) {
 				if (prevTime != 0) {
-					System.out.println("trajectory created");
+					//System.out.println("trajectory created");
 					trajectoryList.add(new Trajectory(tripId, serviceId, routeId, trajectory));
 				}
 				tripId = time.get("trip_id");
