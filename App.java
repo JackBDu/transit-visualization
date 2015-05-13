@@ -63,10 +63,10 @@ public class App extends JPanel {
 				double startLon = Double.parseDouble(this.shapes.get(i-1).get("shape_pt_lon"));
 				double endLat = Double.parseDouble(this.shapes.get(i).get("shape_pt_lat"));
 				double endLon = Double.parseDouble(this.shapes.get(i).get("shape_pt_lon"));
-				Double y1 = 600 - (startLat - 40.4) * 1000;
-				Double y2 = 600 - (endLat - 40.4) * 1000;
-				Double x1 = (startLon + 74.4) * 1000;
-				Double x2 = (endLon + 74.4) * 1000;
+				Double y1 = 600 - (startLat - 40.45) * 1200;
+				Double y2 = 600 - (endLat - 40.45) * 1200;
+				Double x1 = (startLon + 74.3) * 1200;
+				Double x2 = (endLon + 74.3) * 1200;
 				g.drawLine(x1.intValue(), y1.intValue(), x2.intValue(), y2.intValue());
 			} else {
 				if (colorN == this.colors.length - 1) {
@@ -92,13 +92,24 @@ public class App extends JPanel {
 	} // paint() ends
 
 	public Coordinate formatCord(Coordinate cord) {
-		Double lon = (cord.getLon() + 74.4) * 1000;
-		Double lat = 600 - (cord.getLat() - 40.4) * 1000;
+		Double lon = (cord.getLon() + 74.3) * 1200;
+		Double lat = 600 - (cord.getLat() - 40.45) * 1200;
 		return new Coordinate(lat, lon);
 	}
 
 	public void setTime(long time) {
 		this.time = time;
+	}
+
+	public String getTimeString() {
+		String hourStr, minStr, secStr;
+		int hour = (int) this.time/3600;
+		hourStr = hour<10?"0"+hour:""+hour;
+		int  min = (int) (this.time - hour*3600)/60;
+		minStr = min<10?"0"+min:""+min;
+		int sec = (int) (this.time - hour*3600 - min*60);
+		secStr = sec<10?"0"+sec:""+sec;
+		return this.day + " " + hourStr + ":" + minStr + ":" + secStr;
 	}
 
 	// update the status
@@ -127,6 +138,7 @@ public class App extends JPanel {
 		JTextField hourTF = new JTextField(3);
 		JTextField minTF = new JTextField(3);
 		JTextField secTF = new JTextField(3);
+		JLabel timeLabel = new JLabel();
 		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
 		Dimension d = new Dimension(100,50);
 		pbtn.setSize(d);
@@ -177,6 +189,7 @@ public class App extends JPanel {
 		frame.add(app, BorderLayout.CENTER);
 		frame.add(sideBar, BorderLayout.EAST);
 		frame.add(scrollBar, BorderLayout.SOUTH);
+		frame.add(timeLabel, BorderLayout.NORTH);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -187,8 +200,9 @@ public class App extends JPanel {
 		while(true) {
 			app.update();
 			app.repaint();
-			Thread.sleep(10);
+			Thread.sleep(4);
 			scrollBar.setValue((int)app.time);
+			timeLabel.setText(app.getTimeString());
 		}
 		
 	} // main() ends
