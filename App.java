@@ -31,7 +31,7 @@ public class App extends JPanel {
 		this.colors[3] = new Color(0,255,255);
 		this.colors[4] = new Color(255,0,0);
 		this.colors[5] = new Color(255,0,255);
-		this.colors[6] = new Color(255,255,0); 
+		this.colors[6] = new Color(255,255,0);
 	}
 
 	// paint the whole board
