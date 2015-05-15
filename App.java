@@ -21,23 +21,27 @@ import java.io.*;
  * @ author Jack B. Du (Jiadong Du)
  */
 
+// main app of the project
 public class App extends JPanel {
-	ArrayList<Map<String, String>> shapes;
-	Color[] colors = new Color[14];
-	long time = 0;
-	ArrayList<Trajectory> trajectories; 
-	String day = "SUN";
-	boolean isPaused = false;
-	boolean isHiden = true;
-	int sleepTime = 6;
-	BufferedImage img;
-	String[] routeIds;
-	int currentRoute = 0;
-	boolean singleRouteMode = false;
+	ArrayList<Map<String, String>> shapes;// stores the shapes of the transit lines
+	Color[] colors = new Color[14];// stores the color for the lines and subways
+	long time = 0;// stores the simulated time
+	ArrayList<Trajectory> trajectories; // stores the trajectories
+	String day = "SUN";// stores the day as String
+	boolean isPaused = false;// stores whether or not the app is paused
+	boolean isHiden = true;// stores whether or not the lines are hidden
+	int sleepTime = 6;// stores the sleep time for thread, adjusting the speed
+	BufferedImage img;// stores the background`
+	String[] routeIds;// stores all the routes that we have
+	int currentRoute = 0;// stores the route that is being viewed
+	boolean singleRouteMode = false;// stores whether or not the app is in single route mode
+
+	// the constructor of the App class
 	public App(ArrayList<Map<String, String>> shapes) {
 		this.setBackground(new Color(0, 0, 0));				// set background color to white
 		this.setFocusable(true);
 		this.shapes = shapes;
+		// assign values for the colors
 		this.colors[0] = new Color(100,100,100);
 		this.colors[1] = new Color(0,0,100);
 		this.colors[2] = new Color(0,100,0);
@@ -54,10 +58,12 @@ public class App extends JPanel {
 		this.colors[13] = new Color(150,150,0);
 	}
 
+	// loads the background image
 	public void loadImage() throws Exception {
 		this.img = ImageIO.read(new File("data/map.png"));
 	}
-
+	
+	// parse all the All the routes from the file
 	public void parseRoutes() throws Exception {
 		ArrayList<Map<String, String>> routes = GTFSParser.readCSV("data/mta-new-york-city-transit_20150404_2233/routes.csv");
 		System.out.println(routes.size());
@@ -67,6 +73,7 @@ public class App extends JPanel {
 		}
 	}
 
+	// switches to the previous route
 	public void prevRoute() {
 		if (this.currentRoute == 0) {
 			this.currentRoute = this.routeIds.length - 1;
@@ -75,6 +82,7 @@ public class App extends JPanel {
 		}
 	}
 
+	// switches to the next route
 	public void nextRoute() {
 		if (this.currentRoute == this.routeIds.length - 1) {
 			this.currentRoute = 0;
@@ -83,33 +91,39 @@ public class App extends JPanel {
 		}	
 	}
 
+	// toggles the single route mode
 	public void allRoutes() {
 		this.singleRouteMode = !this.singleRouteMode;
 	}
 
+	// assigns the parsed trajectories to the App class
 	public void setTrajectories(ArrayList<Trajectory> trajectories) {
 		this.trajectories = trajectories;
 	}
 
+	// handles the pause and play
 	public void handlePause() {
 		this.isPaused = !this.isPaused;
 	}
 
+	// handles whether or not to hide the route lines
 	public void handleHide() {
 		this.isHiden = !this.isHiden;
 	}
 
+	// set the day displayed
 	public void setDay(String day) {
 		this.day = day;
 	}
 
-	// paint the whole board
+	// paints the whole board
 	public void paint(Graphics g) {
 		int colorN = 0;
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.drawImage(img, 0, 0, null);
+		// draw the lines
 		if (!this.isHiden) {
 			g.setColor(this.colors[colorN]);
 			for(int i = 1; i < this.shapes.size(); i++) {
@@ -136,6 +150,8 @@ public class App extends JPanel {
 		colorN = 0;
 		Color dotColor = new Color(this.colors[colorN].getRed()+105, this.colors[colorN].getGreen()+105, this.colors[colorN].getBlue()+105);
 		g.setColor(dotColor);
+		
+		// draws the trajectories
 		for (Trajectory trajectory : this.trajectories) {
 			//System.out.println(trajectory.getPosition(this.time));
 			if (this.day.equals(trajectory.getServiceId().substring(9, 12))) {
@@ -144,7 +160,7 @@ public class App extends JPanel {
 					//System.out.println(this.time);
 					Double y = screenCord.getLat();
 					Double x = screenCord.getLon();
-					g.fillOval(x.intValue(), y.intValue(), 3, 3);
+					g.fillOval(x.intValue(), y.intValue(), 5, 5);
 				}
 			}
 			if (colorN == this.colors.length - 1) {
@@ -157,20 +173,24 @@ public class App extends JPanel {
 		}
 	} // paint() ends
 
+	// format the lat, lon to x and y
 	public Coordinate formatCord(Coordinate cord) {
 		Double lon = (cord.getLon() + 74.3) * 1200;
 		Double lat = 600 - (cord.getLat() - 40.45) * 1200;
 		return new Coordinate(lat, lon);
 	}
 
+	// set the simluated time
 	public void setTime(long time) {
 		this.time = time;
 	}
 
+	// set the speed of the simulation
 	public void setSpeed(int sleepTime) {
 		this.sleepTime = sleepTime;
 	}
 
+	// get the String of time to display
 	public String getTimeString() {
 		String hourStr, minStr, secStr;
 		String routeId = this.routeIds[this.currentRoute];
@@ -199,7 +219,8 @@ public class App extends JPanel {
 		ArrayList<Map<String, String>> shapes = GTFSParser.readCSV("data/mta-new-york-city-transit_20150404_2233/shapes.csv");
 		// parsing the trips
 		ArrayList<Trajectory> trajectories = GTFSParser.parseTrips("data/mta-new-york-city-transit_20150404_2233");
-		JFrame frame = new JFrame("New York Subway");
+		// creates the components
+		JFrame frame = new JFrame("New York Subway Visualizatoin");
 		frame.setLayout(new BorderLayout());
 		Box sideBar = new Box(BoxLayout.Y_AXIS);
 		JButton pbtn = new JButton("Play/Pause");
@@ -209,10 +230,11 @@ public class App extends JPanel {
 		JButton hideBtn = new JButton("Show/Hide");
 		JButton prevBtn = new JButton("Prev Route");
 		JButton nextBtn = new JButton("Next Route");
-		JButton allBtn = new JButton("All Routes");
+		JButton allBtn = new JButton("All/Single");
 		JLabel timeLabel = new JLabel();
 		JScrollBar scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, 86400);
 		JScrollBar speedBar = new JScrollBar(JScrollBar.HORIZONTAL, 5, 1, 1, 10);
+		// set the sizes
 		Dimension d = new Dimension(100,50);
 		pbtn.setSize(d);
 		sunBtn.setSize(d);
@@ -221,6 +243,8 @@ public class App extends JPanel {
 		hideBtn.setSize(d);
 
 		final App app = new App(shapes);
+
+		// ActionListenrs
 		pbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				app.handlePause();
@@ -271,6 +295,8 @@ public class App extends JPanel {
 				app.setSpeed(11 - e.getValue());
 			}
 		});
+
+		// add components to sideBar
 		sideBar.add(speedBar);
 		sideBar.add(pbtn);
 		sideBar.add(sunBtn);
@@ -299,7 +325,7 @@ public class App extends JPanel {
 		frame.setResizable(false);
 		frame.setBackground(Color.BLACK);
 
-
+		// the main loop of the whole animation
 		while(true) {
 			app.update();
 			app.repaint();

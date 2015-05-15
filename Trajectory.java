@@ -8,6 +8,7 @@ public class Trajectory {
 	private String routeId;
 	private SortedMap<Long, Stop> trajectory;
 
+	// the contructor for the Trajectory class
 	public Trajectory(String tripId, String serviceId, String routeId, SortedMap<Long, Stop> trajectory) {
 		this.tripId = tripId;
 		this.serviceId = serviceId;
@@ -15,14 +16,17 @@ public class Trajectory {
 		this.trajectory = trajectory;
 	}
 
+	// get the trip_id
 	public String getTripId() {
 		return this.tripId;
 	}
 
+	// get the service_id
 	public String getServiceId() {
 		return this.serviceId;
 	}
 
+	// get the route_id
 	public String getRouteId() {
 		return this.routeId;
 	}
@@ -62,10 +66,12 @@ public class Trajectory {
 		return time <= this.trajectory.lastKey() && time >= this.trajectory.firstKey();
 	}
 
+	// get the trajectory
 	public SortedMap<Long, Stop> getTrajectory() {
 		return this.trajectory;
 	}
 
+	// convert to string
 	public String toString() {
 		return "Trajectory {\n"
 			+ "tripId: "+this.tripId+",\n"

@@ -55,6 +55,7 @@ public class GTFSParser {
 		return al;
 	}
 
+	// slice the routeId from tripId
 	private static String getRouteIdFromTripId(String tripId) {
 		String routeId = "";
 		for (int i = 20; tripId.charAt(i) != '.'; i++) {
@@ -63,10 +64,12 @@ public class GTFSParser {
 		return routeId;
 	}
 
+	// slice serviceId from tripId
 	private static String getServiceIdFromTripId(String tripId) {
 		return tripId.substring(0, 12);
 	}
 
+	// parse all the trip info
 	public static ArrayList<Trajectory> parseTrips(String folderPath) throws Exception {
 		System.out.println("parsing starting");
 		ArrayList<Trajectory> trajectoryList = new ArrayList<Trajectory>();
@@ -91,6 +94,7 @@ public class GTFSParser {
 		ArrayList<Map<String, String>> stopsList = readCSV(stopsFilePath);
 		System.out.println("stops parsed");
 		Map<String, Stop> stopMap = new HashMap<String, Stop>();
+		// get all the stops
 		for (Map<String, String> stop : stopsList) {
 			String stopId = stop.get("stop_id");
 			String stopName = stop.get("stop_name");
@@ -103,6 +107,7 @@ public class GTFSParser {
 		}
 		System.out.println("stopMap created");
 
+		// initializes the trajectories
 		SortedMap<Long, Stop> trajectory = null;
 		long prevTime = 0;
 		long arrivalTime;
@@ -113,6 +118,8 @@ public class GTFSParser {
 		Coordinate cord = null;
 
 		System.out.println("creating trajectoryList");
+
+		// loop through the stoptimes
 		for (Map<String, String> time : timesList) {
 			arrivalTime = toSeconds(time.get("arrival_time"));
 			departureTime = toSeconds(time.get("departure_time"));
@@ -174,6 +181,8 @@ public class GTFSParser {
 		return epoch;
 	}
 	*/
+
+	// convert time to seconds of a day
 	private static long toSeconds(String time) {
 		long hours = Long.parseLong(time.substring(0, 2));
 		long minutes = Long.parseLong(time.substring(3, 5));
